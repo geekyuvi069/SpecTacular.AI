@@ -1,0 +1,23 @@
+{
+  "name": "spectacular.ai",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/geekyuvi069/SpecTacular.AI.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/geekyuvi069/SpecTacular.AI/issues"
+  },
+  "homepage": "https://github.com/geekyuvi069/SpecTacular.AI#readme",
+  "description": "",
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.11",
+    "tailwindcss": "^4.1.11"
+  }
+}

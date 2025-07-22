@@ -2,13 +2,86 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>SmartSpec A</title>
+  <title>SmartSpec AI</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    /* Custom Dark Mode Styles */
+    body.dark {
+      background-color: #1a202c;
+      color: #e2e8f0;
+    }
+
+    .dark .bg-white {
+      background-color: #2d3748;
+    }
+
+    .dark .text-gray-700,
+    .dark .text-gray-600 {
+      color: #edf2f7;
+    }
+
+    .dark .bg-indigo-600 {
+      background-color: #4c51bf;
+    }
+
+    .dark .bg-indigo-700 {
+      background-color: #434190;
+    }
+
+    .dark .hover\:bg-indigo-400:hover {
+      background-color: #63b3ed;
+    }
+
+    .dark .text-indigo-700 {
+      color: #63b3ed;
+    }
+
+    .dark .border-indigo-200 {
+      border-color: #4c51bf;
+    }
+
+    .dark .border-indigo-400 {
+      border-color: #63b3ed;
+    }
+
+    .dark .text-green-600 {
+      color: #48bb78;
+    }
+
+    .dark .bg-green-600 {
+      background-color: #48bb78;
+    }
+
+    .dark .hover\:bg-green-700:hover {
+      background-color: #38a169;
+    }
+
+    .dark .text-white {
+      color: #edf2f7;
+    }
+  </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-gray-50 text-gray-800 transition-colors">
   <div class="max-w-4xl mx-auto p-6">
-    <h1 class="text-3xl font-bold mb-6 text-center text-indigo-700">SmartSpec AI</h1>
+    <h1 class="text-3xl font-bold mb-6 text-center text-indigo-700">SpecTacular.AI</h1>
     
+    <div class="flex justify-between mb-6">
+      <!-- Dark Mode Toggle -->
+      <button id="dark-mode-toggle" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">
+         Dark Mode
+      </button>
+    </div>
+    <script>
+  const darkModeToggle = document.getElementById('dark-mode-toggle');
+  const body = document.body;
+
+  darkModeToggle.addEventListener('click', () => {
+    body.classList.toggle('dark');
+    console.log("Dark mode toggled");
+  });
+</script>
+
+
     <div class="flex flex-col md:flex-row gap-6">
       <!-- Left side: Uploads -->
       <div class="flex-1 space-y-6">
@@ -18,7 +91,7 @@
           <input type="file" id="srs-input" class="block w-full border mt-2 p-2 rounded" accept=".pdf,.docx,.txt" />
           <p id="srs-status" class="text-sm text-gray-600 mt-1"></p>
         </div>
-
+        
         <!-- Upload Old Test Cases -->
         <div class="border-2 border-dashed border-indigo-200 rounded-lg p-4 text-center hover:border-indigo-400">
           <h3 class="text-lg font-medium text-gray-700 mb-1">Upload Previous Test Cases (JSON)</h3>
@@ -31,99 +104,6 @@
           Process Documents
         </button>
       </div>
-      <!-- ... (keep everything above the script as-is) -->
-
-<!-- JavaScript Logic -->
-<script>
-  const srsInput = document.getElementById('srs-input');
-  const oldTestsInput = document.getElementById('old-tests-input');
-  const srsStatus = document.getElementById('srs-status');
-  const oldTestsStatus = document.getElementById('old-tests-status');
-  const uploadTrigger = document.getElementById('upload-trigger');
-
-  uploadTrigger.addEventListener('click', () => {
-    if (!srsInput.files.length || !oldTestsInput.files.length) {
-      alert("Please upload both SRS and old test cases.");
-      return;
-    }
-
-    srsStatus.textContent = "Uploading SRS...";
-    oldTestsStatus.textContent = "Uploading test cases...";
-
-    const formData = new FormData();
-    formData.append('srs', srsInput.files[0]);
-    formData.append('old_tests', oldTestsInput.files[0]);
-
-    fetch('/upload_dual', { method: 'POST', body: formData })
-      .then(res => res.json())
-      .then(data => {
-        if (data.error) {
-          srsStatus.textContent = 'Error: ' + data.error;
-          oldTestsStatus.textContent = '';
-        } else {
-          srsStatus.textContent = `SRS uploaded ✅`;
-          oldTestsStatus.textContent = `Old test cases uploaded ✅`;
-          markStepsCompleted();
-        }
-      })
-      .catch(err => {
-        console.error(err);
-        srsStatus.textContent = 'Upload failed.';
-      });
-  });
-
-  document.getElementById('download-trace-btn').addEventListener('click', () => {
-    window.location.href = "/download/traceability";
-  });
-
-  function markStepsCompleted() {
-    document.getElementById('step-1').classList.add('text-green-600', 'font-semibold');
-    document.getElementById('step-2').classList.add('text-green-600', 'font-semibold');
-    document.getElementById('step-3').classList.add('text-green-600', 'font-semibold');
-    document.getElementById('step-4').classList.add('text-green-600', 'font-semibold');
-  }
-
-  // Query box logic
-  const queryBtn = document.getElementById('query-btn');
-  queryBtn.addEventListener('click', () => {
-    const queryText = document.getElementById('query-input').value.trim();
-    if (!queryText) {
-      alert("Enter a query to generate test cases.");
-      return;
-    }
-
-    fetch('/query', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query: queryText })
-    })
-      .then(res => res.json())
-      .then(data => {
-        const output = document.getElementById('query-output');
-        output.innerHTML = "";
-        data.testCases.forEach((tc, i) => {
-          const div = document.createElement('div');
-          div.className = "border border-gray-300 rounded p-3 my-2";
-          div.innerHTML = `<strong>${tc.title}</strong><br/>
-            <em>${tc.description}</em><br/>
-            <strong>Steps:</strong> ${tc.steps}<br/>
-            <strong>Expected:</strong> ${tc.expected}`;
-          output.appendChild(div);
-        });
-      });
-  });
-</script>
-
-<!-- Add this just above </body> -->
-<div class="max-w-4xl mx-auto mt-10 p-6 bg-white border rounded">
-  <h2 class="text-xl font-semibold text-gray-700 mb-2">Test Case Generation via Query</h2>
-  <input id="query-input" type="text" placeholder="Enter query..." class="w-full border rounded p-2 mb-3" />
-  <button id="query-btn" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">
-    Generate Test Cases
-  </button>
-  <div id="query-output" class="mt-4 text-sm"></div>
-</div>
-
 
       <!-- Right side: Status and Downloads -->
       <div class="flex-1 border border-gray-200 rounded-lg p-4 space-y-4">
@@ -146,10 +126,28 @@
         </div>
       </div>
     </div>
+
+    <!-- Test Case Generation via Query -->
+    <div class="max-w-4xl mx-auto mt-10 p-6 bg-white border rounded">
+      <h2 class="text-xl font-semibold text-gray-700 mb-2">Test Case Generation via Query</h2>
+      <input id="query-input" type="text" placeholder="Enter query..." class="w-full border rounded p-2 mb-3" />
+      <button id="query-btn" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">
+        Generate Test Cases
+      </button>
+      <div id="query-output" class="mt-4 text-sm"></div>
+    </div>
   </div>
-  
+
   <!-- JavaScript Logic -->
   <script>
+    // Dark Mode Toggle
+    const darkModeToggle = document.getElementById('dark-mode-toggle');
+    const body = document.body;
+
+    darkModeToggle.addEventListener('click', () => {
+      body.classList.toggle('dark');
+    });
+
     const srsInput = document.getElementById('srs-input');
     const oldTestsInput = document.getElementById('old-tests-input');
     const srsStatus = document.getElementById('srs-status');
@@ -176,8 +174,8 @@
             srsStatus.textContent = 'Error: ' + data.error;
             oldTestsStatus.textContent = '';
           } else {
-            srsStatus.textContent = `SRS uploaded ✅`;
-            oldTestsStatus.textContent = `Old test cases uploaded ✅`;
+            srsStatus.textContent = 'SRS uploaded ✅';
+            oldTestsStatus.textContent = 'Old test cases uploaded ✅';
             markStepsCompleted();
           }
         })
@@ -197,6 +195,24 @@
       document.getElementById('step-3').classList.add('text-green-600', 'font-semibold');
       document.getElementById('step-4').classList.add('text-green-600', 'font-semibold');
     }
-  </script>
-</body>
-</html>
+
+    // Query box logic
+    const queryBtn = document.getElementById('query-btn');
+    queryBtn.addEventListener('click', () => {
+      const queryText = document.getElementById('query-input').value.trim();
+      if (!queryText) {
+        alert("Enter a query to generate test cases.");
+        return;
+      }
+
+      fetch('/query', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: queryText })
+      })
+        .then(res => res.json())
+        .then(data => {
+          const output = document.getElementById('query-output');
+          output.innerHTML = "";
+          data.testCases.forEach((tc, i) => {
+            const div =  
